@@ -1,6 +1,7 @@
 package com.example.myrecipeapp
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,10 +24,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun RecipeScreen() {
-    val recipeView: MainViewModel = viewModel()
-    val fetchingState by recipeView.categoriesState
-
+fun RecipeScreen(navigateToDetail: (Category) -> Unit,
+                 fetchingState: MainViewModel.RecipeState) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -40,15 +39,14 @@ fun RecipeScreen() {
             }
 
             else -> {
-                CategoryScreen(categories = fetchingState.list)
+                CategoryScreen(categories = fetchingState.list, navigateToDetail)
             }
         }
     }
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>
-) {
+fun CategoryScreen(categories: List<Category>, navigateToDetail: (Category) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -56,13 +54,13 @@ fun CategoryScreen(categories: List<Category>
             .padding(8.dp)
     ) {
         items(categories) {
-            CategoryItem(category = it)
+            CategoryItem(category = it, navigateToDetail)
         }
     }
 }
 
 @Composable
-fun CategoryItem(category: Category) {
+fun CategoryItem(category: Category, navigateToDetail: (Category) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,6 +74,9 @@ fun CategoryItem(category: Category) {
             modifier = Modifier
                 .aspectRatio(1f)
                 .fillMaxSize()
+                .clickable {
+                    navigateToDetail(category)
+                }
         )
 
         Text(
